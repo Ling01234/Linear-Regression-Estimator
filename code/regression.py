@@ -131,3 +131,4 @@ model.get_sigma_naive()
 model2 = LinearRegression(p=2)
 model2.generate_data()
 model2.plot_multi_data()
+
