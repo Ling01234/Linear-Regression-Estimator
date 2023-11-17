@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import pandas as pd
 from icecream import ic
+from prettytable import PrettyTable
 
 
 class LinearRegression():
@@ -196,7 +197,15 @@ class LinearRegression():
     def get_t_values(self):
         if self.standard_errors is not None:
             self.t_values = self.weights / self.standard_errors
-
+            
+    # function to print a pretty table containing values
+    def print_pretty_table(headers, rows):
+        pretty_table = PrettyTable(headers)
+        for row in rows:
+            pretty_table.add_row(row)
+            
+        print(pretty_table)
+        
     def summarize(self):
 
         if self.weights is None:
@@ -209,15 +218,10 @@ class LinearRegression():
         residuals_min = np.min(self.residuals)
         residuals_median = np.median(self.residuals)
         residuals_max = np.max(self.residuals)
-        df_residuals = pd.DataFrame({
-            'Min': residuals_min,
-            '1Q': residuals_1q,
-            'Median': residuals_median,
-            '3Q': residuals_3q,
-            'Max': residuals_max
-        }, index=[0])
+        residuals_table = PrettyTable(['Min', '1Q', 'Median', '3Q', 'Max'])
+        residuals_table.add_row([residuals_min, residuals_1q, residuals_median, residuals_3q, residuals_max])
         print('Residuals:')
-        print(df_residuals)
+        print(residuals_table)
 
         # get estimates, std error, t value, Pr(>|t|) for coefficients
         coef_stats = []
@@ -238,20 +242,23 @@ class LinearRegression():
                 't value': self.t_values,
                 'p value': self.p_value
             })
-
-        print(coef_stats)
-
+        
+        # print coef stats
+        coef_stats_table = PrettyTable(['Coef', 'Estimate', 'Std. error', 't value', 'p value'])
+        print('Coefficients:')
+        for stat in coef_stats:
+            coef_stats_table.add_row([stat['Coef'], stat['Estimate'], stat['Std. error'], stat['t value'], stat['p value']])
+        print(coef_stats_table)
+        
         # residual std error and p value
-        print(f'Residual standard error: \
-                {self.RSE} on {self.n - self.p - 1} degrees of freedom')
+        print(f'Residual standard error: {self.RSE} on {self.n - self.p - 1} degrees of freedom')
 
         # R2 and adj R2
         print(f'R-squared: {self.R2}, Adjusted R-squared: {self.adj_R2}')
 
         # F-statistic and p value
         print(
-            f'F-statistic: {self.F_stat} on {self.p} \
-                and {self.n - self.p - 1} DF, p-value: {self.p_value}')
+            f'F-statistic: {self.F_stat} on {self.p} and {self.n - self.p - 1} DF, p-value: {self.p_value}')
 
         # print other metrics
         df_metrics = pd.DataFrame({
@@ -261,7 +268,9 @@ class LinearRegression():
             'MAE': self.MAE,
             'RMSE': self.RMSE
         }, index=[0])
-        print(df_metrics)
+        other_metrics_table = PrettyTable(['Sigma naive', 'Sigma cor', 'MSE', 'MAE', 'RMSE'])
+        other_metrics_table.add_row([self.sigma_naive, self.sigma_cor, self.MSE, self.MAE, self.RMSE])
+        print(other_metrics_table)
 
     # helper function to get data quartiles
     def get_quartiles(self, data):
@@ -286,9 +295,17 @@ class LinearRegression():
         self.get_t_values()
 
 
-model = LinearRegression()
-model.generate_data()
-model.fit(model.X, model.true_y)
-model.predict(model.X)
-model.sample_residuals()
-model.summarize()
+# model = LinearRegression()
+# model.generate_data()
+# model.fit(model.X, model.true_y)
+# model.predict(model.X)
+# model.sample_residuals()
+# model.summarize()
+
+model2 = LinearRegression(n=3, p=1)
+model2.X = [1, 2, 3]
+model2.true_y = [4, 5, 10]
+model2.fit(model2.X, model2.true_y)
+model2.predict(model2.X)
+model2.sample_residuals()
+model2.summarize()
