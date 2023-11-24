@@ -1,7 +1,9 @@
 import numpy as np
+from scipy.stats import f
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from icecream import ic
+from prettytable import PrettyTable
 import pandas as pd
 
 
@@ -146,50 +148,155 @@ class LinearRegression():
             np.sum(np.square(self.residuals))
 
 
-# model = LinearRegression()
-# model.generate_data()
-# model.fit(model.X, model.true_y)
-# # ic(model.weights)
-# model.plot_simple_data()
-# model.plot_simple_regression_line()
-# model.get_sigma_naive()
-# # print(f"sigma naive: {model.sigma_naive}")
+    def get_R2(self):
+        ymean = np.mean(self.true_y)
+        SSR = np.sum(np.square(self.true_y - self.pred))
+        SST = np.sum(np.square(self.true_y - ymean))
+        self.R2 = 1 - SSR/SST
 
-# # --------
-# model2 = LinearRegression(p=2)
-# model2.generate_data()
-# model2.plot_multi_data(generated_data=True)
+    def get_adj_R2(self):
+        self.get_R2()
+        fraction = (1 - self.R2)*(self.n - 1) / (self.n - self.p - 1)
+        self.adj_R2 = 1 - fraction
 
+    def get_MSE(self):
+        sum_of_squares = np.sum(np.square(self.true_y - self.pred))
+        self.MSE = sum_of_squares/self.n
 
-# get dataframe
-df = pd.read_csv('house.csv')
-# ic(df.head())
-condition = df['price'] > 2000000
-df = df.drop(df[condition].index)
+    # MAE: Mean Absolute Error
+    def get_MAE(self):
+        sum_of_abs = np.sum(np.absolute(self.true_y - self.pred))
+        self.MAE = sum_of_abs/self.n
 
-# remove unnecessary columns
-to_remove = ['id', 'date', 'waterfront', 'view',
-             'condition', 'zipcode', 'lat', 'long']
-data_multi = df.drop(columns=to_remove)
+    # RMSE: Root Mean Squared Error
+    def get_RMSE(self):
+        self.get_MSE()
+        self.RMSE = np.sqrt(self.MSE)
 
-# target variable
-target = df['price']
+    # RSE: Residual Standard Error
+    def get_RSE(self):
+        sum_sq_res = np.sum(np.square(self.residuals))
+        self.RSE = np.sqrt(sum_sq_res / (self.n - self.p - 1))
 
-# univariate case
-data_simple = df['sqft_living']
-model_simple = LinearRegression(n=len(data_simple))
-model_simple.X = data_simple
-model_simple.true_y = target
-model_simple.fit(data_simple, target)
-model_simple.plot_simple_regression_line()
-# ic(model_simple.weights)
+    def get_F_stat(self):
+        ymean = np.mean(self.true_y)
+        SST = np.sum(np.square(self.true_y - ymean))
+        SSR = np.sum(np.square(self.pred - ymean))
+        RSS = np.sum(np.square(self.true_y - self.pred))
+        MSR = SSR / self.p
+        MSE = RSS / (self.n - self.p - 1)
+        self.F_stat = MSR / MSE
 
-# bi variate case
-data_multi2 = df[['sqft_living', 'yr_built']]
-model_multi2 = LinearRegression(n=len(data_multi2), p=len(data_multi2.columns))
-model_multi2.X = data_multi2
-model_multi2.true_y = target
-model_multi2.fit(data_multi2, target)
-model_multi2.plot_multi_data()
+    def get_p_value(self):
+        self.p_value = 1 - f.cdf(self.F_stat, self.p, self.n - self.p - 1)
 
-# multi variate case
+    def get_standard_errors(self):
+        RSS = np.sum(np.square(self.residuals))
+        MSE = RSS / (self.n - self.p - 1)
+        # XtX_inverse = np.linalg.inv(self.X.T.dot(self.X))
+        if self.p != 1:
+            XtX_inverse = np.linalg.inv(np.dot(self.X.T, self.X))
+            self.standard_errors = np.sqrt(MSE * np.diag(XtX_inverse))
+        else:
+            xmean = np.mean(self.X)
+            self.standard_errors = MSE / np.sum(np.square(self.X - xmean))
+
+    def get_t_values(self):
+        if self.standard_errors is not None:
+            self.t_values = self.weights / self.standard_errors
+            
+    # function to print a pretty table containing values
+    def print_pretty_table(headers, rows):
+        pretty_table = PrettyTable(headers)
+        for row in rows:
+            pretty_table.add_row(row)
+            
+        print(pretty_table)
+        
+    def summarize(self):
+
+        if self.weights is None:
+            raise ValueError("Linear regression has not yet been performed.")
+
+        self.update_metrics()
+
+        # print residuals info
+        residuals_1q, residuals_3q = self.get_quartiles(self.residuals)
+        residuals_min = np.min(self.residuals)
+        residuals_median = np.median(self.residuals)
+        residuals_max = np.max(self.residuals)
+        residuals_table = PrettyTable(['Min', '1Q', 'Median', '3Q', 'Max'])
+        residuals_table.add_row([residuals_min, residuals_1q, residuals_median, residuals_3q, residuals_max])
+        print('Residuals:')
+        print(residuals_table)
+
+        # get estimates, std error, t value, Pr(>|t|) for coefficients
+        coef_stats = []
+        if self.p != 1:
+            for idx, weight in enumerate(self.weights):
+                coef_stats.append({
+                    'Coef': f'x{idx}',
+                    'Estimate': weight,
+                    'Std. error': self.standard_errors[idx],
+                    't value': self.t_values[idx],
+                    'p value': self.p_value # might need to change
+                })
+        else:
+            coef_stats.append({
+                'Coef': f'x{0}',
+                'Estimate': self.weights,
+                'Std. error': self.standard_errors,
+                't value': self.t_values,
+                'p value': self.p_value
+            })
+        
+        # print coef stats
+        coef_stats_table = PrettyTable(['Coef', 'Estimate', 'Std. error', 't value', 'p value'])
+        print('Coefficients:')
+        for stat in coef_stats:
+            coef_stats_table.add_row([stat['Coef'], stat['Estimate'], stat['Std. error'], stat['t value'], stat['p value']])
+        print(coef_stats_table)
+        
+        # residual std error and p value
+        print(f'Residual standard error: {self.RSE} on {self.n - self.p - 1} degrees of freedom')
+
+        # R2 and adj R2
+        print(f'R-squared: {self.R2}, Adjusted R-squared: {self.adj_R2}')
+
+        # F-statistic and p value
+        print(
+            f'F-statistic: {self.F_stat} on {self.p} and {self.n - self.p - 1} DF, p-value: {self.p_value}')
+
+        # print other metrics
+        df_metrics = pd.DataFrame({
+            'Sigma naive': self.sigma_naive,
+            'Sigma cor': self.sigma_cor,
+            'MSE': self.MSE,
+            'MAE': self.MAE,
+            'RMSE': self.RMSE
+        }, index=[0])
+        other_metrics_table = PrettyTable(['Sigma naive', 'Sigma cor', 'MSE', 'MAE', 'RMSE'])
+        other_metrics_table.add_row([self.sigma_naive, self.sigma_cor, self.MSE, self.MAE, self.RMSE])
+        print(other_metrics_table)
+
+    # helper function to get data quartiles
+    def get_quartiles(self, data):
+        data_cpy = np.copy(data)
+        data_cpy.sort()
+        q1 = np.percentile(data_cpy, 25)
+        q3 = np.percentile(data_cpy, 75)
+        return q1, q3
+
+    def update_metrics(self):
+        self.get_sigma_naive()
+        self.get_sigma_cor()
+        self.get_R2()
+        self.get_adj_R2()
+        self.get_MSE()
+        self.get_MAE()
+        self.get_RMSE()
+        self.get_RSE()
+        self.get_F_stat()
+        self.get_p_value()
+        self.get_standard_errors()
+        self.get_t_values()

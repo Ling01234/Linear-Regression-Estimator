@@ -1,6 +1,0 @@
-model = LinearRegression()
-# model.generate_data()
-# model.fit(model.X, model.true_y)
-# model.predict(model.X)
-# model.sample_residuals()
-# model.summarize()
