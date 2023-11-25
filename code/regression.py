@@ -3,7 +3,7 @@ from scipy.stats import f
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from icecream import ic
-from prettytable import PrettyTable
+from prettytable import PrettyTable, MSWORD_FRIENDLY
 import pandas as pd
 
 
@@ -147,7 +147,6 @@ class LinearRegression():
         self.sigma_cor = 1/(self.n - self.p) * \
             np.sum(np.square(self.residuals))
 
-
     def get_R2(self):
         ymean = np.mean(self.true_y)
         SSR = np.sum(np.square(self.true_y - self.pred))
@@ -204,15 +203,15 @@ class LinearRegression():
     def get_t_values(self):
         if self.standard_errors is not None:
             self.t_values = self.weights / self.standard_errors
-            
+
     # function to print a pretty table containing values
     def print_pretty_table(headers, rows):
         pretty_table = PrettyTable(headers)
         for row in rows:
             pretty_table.add_row(row)
-            
+
         print(pretty_table)
-        
+
     def summarize(self):
 
         if self.weights is None:
@@ -226,9 +225,16 @@ class LinearRegression():
         residuals_median = np.median(self.residuals)
         residuals_max = np.max(self.residuals)
         residuals_table = PrettyTable(['Min', '1Q', 'Median', '3Q', 'Max'])
-        residuals_table.add_row([residuals_min, residuals_1q, residuals_median, residuals_3q, residuals_max])
+        row = [residuals_min, residuals_1q,
+               residuals_median, residuals_3q, residuals_max]
+        row = [round(item, 1) for item in row]
+        residuals_table.add_row(row)
         print('Residuals:')
+        residuals_table.align = 'c'
         print(residuals_table)
+        table = residuals_table.get_csv_string()
+        with open(f'figure/p{self.p}_residuals.csv', 'w') as file:
+            file.write(table)
 
         # get estimates, std error, t value, Pr(>|t|) for coefficients
         coef_stats = []
@@ -239,7 +245,7 @@ class LinearRegression():
                     'Estimate': weight,
                     'Std. error': self.standard_errors[idx],
                     't value': self.t_values[idx],
-                    'p value': self.p_value # might need to change
+                    'p value': self.p_value  # might need to change
                 })
         else:
             coef_stats.append({
@@ -249,23 +255,41 @@ class LinearRegression():
                 't value': self.t_values,
                 'p value': self.p_value
             })
-        
+
         # print coef stats
-        coef_stats_table = PrettyTable(['Coef', 'Estimate', 'Std. error', 't value', 'p value'])
+        coef_stats_table = PrettyTable(
+            ['Coef', 'Estimate', 'Std. error', 't value', 'p value'])
         print('Coefficients:')
         for stat in coef_stats:
-            coef_stats_table.add_row([stat['Coef'], stat['Estimate'], stat['Std. error'], stat['t value'], stat['p value']])
+            row = [stat['Coef'], stat['Estimate'],
+                   stat['Std. error'], stat['t value'], stat['p value']]
+
+            for index, item in enumerate(row):
+                if index not in [len(row) - 1, 0]:
+                    row[index] = round(item, 1)
+
+            coef_stats_table.add_row(row)
+        coef_stats_table.align = 'c'
         print(coef_stats_table)
-        
-        # residual std error and p value
-        print(f'Residual standard error: {self.RSE} on {self.n - self.p - 1} degrees of freedom')
+        table = coef_stats_table.get_csv_string()
+        with open(f'figure/p{self.p}_coef_stats_table.csv', 'w') as file:
+            file.write(table)
 
-        # R2 and adj R2
-        print(f'R-squared: {self.R2}, Adjusted R-squared: {self.adj_R2}')
+        with open(f'figure/p{self.p}_texts.tex', 'w') as file:
+            # residual std error and p value
+            rse = f'Residual standard error: {self.RSE:.2f} on {(self.n - self.p - 1)} degrees of freedom\n\n'
+            print(rse, end='')
+            file.write(rse)
 
-        # F-statistic and p value
-        print(
-            f'F-statistic: {self.F_stat} on {self.p} and {self.n - self.p - 1} DF, p-value: {self.p_value}')
+            # R2 and adj R2
+            r2 = f'R-squared: {self.R2:.2f}, Adjusted R-squared: {self.adj_R2:.2f}\n\n'
+            print(r2, end='')
+            file.write(r2)
+
+            # F-statistic and p value
+            f = f'F-statistic: {self.F_stat:.2f} on {self.p} and {self.n - self.p - 1} DF, p-value: {self.p_value}\n\n'
+            print(f, end='')
+            file.write(f)
 
         # print other metrics
         df_metrics = pd.DataFrame({
@@ -275,9 +299,16 @@ class LinearRegression():
             'MAE': self.MAE,
             'RMSE': self.RMSE
         }, index=[0])
-        other_metrics_table = PrettyTable(['Sigma naive', 'Sigma cor', 'MSE', 'MAE', 'RMSE'])
-        other_metrics_table.add_row([self.sigma_naive, self.sigma_cor, self.MSE, self.MAE, self.RMSE])
+        other_metrics_table = PrettyTable(
+            ['Sigma naive', 'Sigma cor', 'MSE', 'MAE', 'RMSE'])
+        row = [self.sigma_naive, self.sigma_cor, self.MSE, self.MAE, self.RMSE]
+        row = [round(item, 1) for item in row]
+        other_metrics_table.add_row(row)
+        other_metrics_table.align = 'c'
         print(other_metrics_table)
+        table = other_metrics_table.get_csv_string()
+        with open(f'figure/p{self.p}_other_metrics_table.csv', 'w') as file:
+            file.write(table)
 
     # helper function to get data quartiles
     def get_quartiles(self, data):

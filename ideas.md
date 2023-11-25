@@ -16,5 +16,5 @@
 3. Compare to Python's implementation (sklearn) the accuracy of our implementation
 
 # TODO:
-1. write predict function -> make sure it works for both simple and multi
-2. make sure to call predict before plotting (in simple linear)
+1. write a function to present the summary table nicely in latex
+2. confidence interval for predictions (univariate case)
