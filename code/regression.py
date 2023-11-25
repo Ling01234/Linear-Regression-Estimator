@@ -5,6 +5,8 @@ from mpl_toolkits.mplot3d import Axes3D
 from icecream import ic
 from prettytable import PrettyTable, MSWORD_FRIENDLY
 import pandas as pd
+import seaborn as sns
+import pandas as pd
 
 
 class LinearRegression():
@@ -69,23 +71,29 @@ class LinearRegression():
             plt.show()
             plt.close()
 
-    def plot_simple_regression_line(self, show=False):
+    def plot_simple_regression_line(self, show=False, ci=True, interval=95):
         plt.figure(figsize=(8, 6))
         plt.scatter(self.X, self.true_y,
                     label=f"Data Points", c='b', s=1)
-        plt.xlabel("sqft_living")
-        plt.ylabel("Housing Price")
-        plt.title("Simple Linear Regression")
-
-        # get true line
-        # line = np.dot(self.X, self.true_weights)
-        # plt.plot(self.X, line, label=f"True Line", color='r')
 
         # get model weights and bais
         self.fit(self.X, self.true_y)
         self.predict(self.X)
-        plt.plot(self.X, self.pred, label=f"Regression line", color='g')
 
+        # if want to show CI, default to 95
+        if ci:
+            df = pd.DataFrame(
+                {'sqft_living': self.X, 'Housing Price': self.true_y})
+
+            sns.regplot(x='sqft_living', y='Housing Price',
+                        data=df, ci=interval, color='0.5', line_kws=dict(color='g', label=f'{interval}% CI Regression Line'), scatter_kws=dict(s=1, label=f'Data Points', color='b'))
+
+        else:
+            plt.xlabel("sqft_living")
+            plt.ylabel("Housing Price")
+            plt.plot(self.X, self.pred, label=f"Regression Line", color='g')
+
+        plt.title("Simple Linear Regression")
         plt.legend()
         plt.savefig("figure/simple_regression.png")
         if show:
