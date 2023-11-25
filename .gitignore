@@ -1,9 +1,10 @@
 code/__pycache__/
 .vscode/
+*.tex
 *.aux
 *.fdb_latexmk
 *.fls
 *.log
 *.out
-*.gz
+*.synctex.gz
 *.toc
