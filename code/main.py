@@ -31,6 +31,8 @@ model_simple.fit(data_simple, target)
 model_simple.plot_simple_regression_line()
 # ic(model_simple.weights)
 
+model_simple.summarize()
+
 # bi variate case
 data_multi2 = df[['sqft_living', 'yr_built']]
 model_multi2 = LinearRegression(n=len(data_multi2), p=len(data_multi2.columns))
