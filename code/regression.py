@@ -1,4 +1,5 @@
 import numpy as np
+from scipy import stats
 from scipy.stats import f
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -26,23 +27,49 @@ class LinearRegression():
         self.intercept = 0
 
     def fit(self, X, y):
-        if self.p == 1:  # univariate
-            xmean = np.mean(X)
-            ymean = np.mean(y)
+        # if self.p == 1:  # univariate
+        #     xmean = np.mean(X)
+        #     ymean = np.mean(y)
 
-            # slope
-            bhat1 = np.sum((X - xmean)*(y - ymean)) / \
-                np.sum(np.square(X - xmean))
-            self.weights = bhat1
+        #     # slope
+        #     bhat1 = np.sum((X - xmean)*(y - ymean)) / \
+        #         np.sum(np.square(X - xmean))
+        #     self.weights = bhat1
 
-            # intercept
-            self.intercept = ymean - xmean * self.weights
-        else:  # multi variate case
-            self.weights = np.linalg.inv(
-                X.T @ X) @ X.T @ y
+        #     # intercept
+        #     self.intercept = ymean - xmean * self.weights
+        # else:  # multi variate case
+            
+        #     # add column of ones to x to include intercept
+        #     X = np.hstack((np.ones((X.shape[0], 1)), X))
+            
+        #     self.weights = np.linalg.inv(
+        #         X.T @ X) @ X.T @ y
+        
+        # if X is a 1d array, reshape to column
+        if len(X.shape) == 1:
+            X = X.reshape(-1, 1)
+            
+        # add column of ones to X for intercept
+        X = np.hstack((np.ones((X.shape[0], 1)), X))
+         
+        # compute weights
+        self.weights = np.linalg.inv(X.T @ X) @ X.T @ y
 
     def predict(self, X):
-        self.pred = np.dot(X, self.weights) + self.intercept
+        
+        # if X is a 1d array, reshape to column
+        if len(X.shape) == 1:
+            X = X.reshape(-1, 1)
+        
+        # add column on ones to x to include intercept
+        X = np.hstack((np.ones((X.shape[0], 1)), X))
+
+        # get predictions (includes intercept)
+        self.pred = np.dot(X, self.weights)
+        
+        # update sample residuals
+        self.sample_residuals()
 
     def generate_data(self):
         if self.p == 1:
@@ -191,15 +218,31 @@ class LinearRegression():
         self.p_value = 1 - f.cdf(self.F_stat, self.p, self.n - self.p - 1)
 
     def get_standard_errors(self):
-        RSS = np.sum(np.square(self.residuals))
-        MSE = RSS / (self.n - self.p - 1)
-        # XtX_inverse = np.linalg.inv(self.X.T.dot(self.X))
-        if self.p != 1:
-            XtX_inverse = np.linalg.inv(np.dot(self.X.T, self.X))
-            self.standard_errors = np.sqrt(MSE * np.diag(XtX_inverse))
-        else:
-            xmean = np.mean(self.X)
-            self.standard_errors = MSE / np.sum(np.square(self.X - xmean))
+        
+        # update residuals
+        self.sample_residuals()
+        
+        # get mean squared error
+        MSE = np.sum(np.square(self.residuals)) / (self.n - len(self.weights))
+        
+        # add intercept term to x
+        X_with_intercept = np.hstack((np.ones((self.X.shape[0], 1)), self.X))
+        
+        # get variance-covariance matrix
+        var_cov_matrix = MSE * np.linalg.inv(X_with_intercept.T @ X_with_intercept)
+        
+        # get standard errors (sqrt of diagonal terms)
+        self.standard_errors = np.sqrt(np.diag(var_cov_matrix))
+        
+        # RSS = np.sum(np.square(self.residuals))
+        # MSE = RSS / (self.n - self.p - 1)
+        # # XtX_inverse = np.linalg.inv(self.X.T.dot(self.X))
+        # if self.p != 1:
+        #     XtX_inverse = np.linalg.inv(np.dot(self.X.T, self.X))
+        #     self.standard_errors = np.sqrt(MSE * np.diag(XtX_inverse))
+        # else:
+        #     xmean = np.mean(self.X)
+        #     self.standard_errors = MSE / np.sum(np.square(self.X - xmean))
 
     def get_t_values(self):
         if self.standard_errors is not None:
@@ -231,30 +274,26 @@ class LinearRegression():
         print(residuals_table)
 
         # get estimates, std error, t value, Pr(>|t|) for coefficients
-        coef_stats = []
-        if self.p != 1:
-            for idx, weight in enumerate(self.weights):
-                coef_stats.append({
-                    'Coef': f'x{idx}',
-                    'Estimate': weight,
-                    'Std. error': self.standard_errors[idx],
-                    't value': self.t_values[idx],
-                    'p value': self.p_value # might need to change
-                })
-        else:
-            coef_stats.append({
-                'Coef': f'x{0}',
-                'Estimate': self.weights,
-                'Std. error': self.standard_errors,
-                't value': self.t_values,
-                'p value': self.p_value
-            })
-        
-        # print coef stats
         coef_stats_table = PrettyTable(['Coef', 'Estimate', 'Std. error', 't value', 'p value'])
+        coef_stats = []
+        coef_names = ['Intercept'] + [f'x{i}' for i in range(1, self.p + 1)]
         print('Coefficients:')
+        for idx, weight in enumerate(self.weights):
+            # compute p value for weight
+            p_value = 2 * (1 - stats.t.cdf(abs(self.t_values[idx]), df=self.n-self.p-1))
+            # format p value to not display small values as 0
+            formatted_p_value = "{:.4e}".format(p_value)
+            coef_stats.append([
+                coef_names[idx],
+                weight,
+                self.standard_errors[idx],
+                self.t_values[idx],  
+                formatted_p_value
+            ])
+        
         for stat in coef_stats:
-            coef_stats_table.add_row([stat['Coef'], stat['Estimate'], stat['Std. error'], stat['t value'], stat['p value']])
+            coef_stats_table.add_row(stat)
+            
         print(coef_stats_table)
         
         # residual std error and p value
