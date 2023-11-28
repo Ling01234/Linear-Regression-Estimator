@@ -384,11 +384,12 @@ class LinearRegression():
         
         # get confidence intervals
         confidence_intervals = {}
+        coef_names = ['Intercept'] + [f'x{i}' for i in range(1, self.p + 1)]
         for idx, (coef, std_error) in enumerate(zip(self.weights, self.standard_errors)):
             # get error margin lower and upper bounds
             error_margin = critical_value * std_error
             lower_bound = coef - error_margin
             upper_bound = coef + error_margin
-            confidence_intervals[f'Coefficient {idx}'] = (lower_bound, upper_bound)
+            confidence_intervals[coef_names[idx]] = (lower_bound, upper_bound)
             
         return confidence_intervals
