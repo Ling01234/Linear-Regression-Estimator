@@ -1,6 +1,7 @@
 import numpy as np
 from scipy import stats
 from scipy.stats import f
+from scipy.stats import t
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from icecream import ic
@@ -357,6 +358,7 @@ class LinearRegression():
         return q1, q3
 
     def update_metrics(self):
+        self.sample_residuals()
         self.get_sigma_naive()
         self.get_sigma_cor()
         self.get_R2()
@@ -369,3 +371,24 @@ class LinearRegression():
         self.get_p_value()
         self.get_standard_errors()
         self.get_t_values()
+
+    # function to get confidence intervals for each weight given a confidence level
+    # returns a dict mapping from each coefficient to a (lower bound, upper bound) tuple
+    def get_confidence_intervals(self, confidence_level=0.95):
+        
+        # get degrees of freedom
+        df = self.n - len(self.weights)
+        
+        # get critical value from t dist
+        critical_value = t.ppf(1 - (1 - confidence_level)/2, df)
+        
+        # get confidence intervals
+        confidence_intervals = {}
+        for idx, (coef, std_error) in enumerate(zip(self.weights, self.standard_errors)):
+            # get error margin lower and upper bounds
+            error_margin = critical_value * std_error
+            lower_bound = coef - error_margin
+            upper_bound = coef + error_margin
+            confidence_intervals[f'Coefficient {idx}'] = (lower_bound, upper_bound)
+            
+        return confidence_intervals
