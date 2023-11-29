@@ -137,7 +137,7 @@ class LinearRegression():
             y_plane = np.linspace(
                 self.X['yr_built'].min(), self.X['yr_built'].max(), 100)
         xx, yy = np.meshgrid(x_plane, y_plane)
-        z_plane = self.weights[0] * xx + self.weights[1] * yy
+        z_plane = self.weights[1] * xx + self.weights[2] * yy + self.weights[0]
 
         # plot regression plane
         ax.plot_surface(xx, yy, z_plane, alpha=0.5,
