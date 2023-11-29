@@ -393,3 +393,31 @@ class LinearRegression():
             confidence_intervals[coef_names[idx]] = (lower_bound, upper_bound)
             
         return confidence_intervals
+    
+    # function to perform hypothesis testing
+    # tests null hypothesis, where H0: coefficient = 0, for each coefficient in the model
+    def perform_hypothesis_testing(self, significance_level=0.05):
+        
+        # get degrees of freedom (n-p-1)
+        df = self.n - len(self.weights)
+        
+        # get hypothesis test results for each coefficient
+        hypothesis_test_results = {}
+        coef_names = ['Intercept'] + [f'x{i}' for i in range(1, self.p + 1)]
+        for idx, (coef, std_error) in enumerate(zip(self.weights, self.standard_errors)):
+            
+            # get t value
+            t_value = coef / std_error
+            
+            # get p value
+            p_value = 2 * (1 - t.cdf(abs(t_value), df))
+            
+            # add to dict
+            hypothesis_test_results[coef_names[idx]] = {
+                't_value': t_value,
+                'p_value': p_value,
+                'reject_null_hypothesis?': p_value < significance_level
+            }
+            
+        return hypothesis_test_results
+        

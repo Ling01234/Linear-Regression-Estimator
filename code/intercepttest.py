@@ -26,5 +26,5 @@ model_simple.fit(model_simple.X, model_simple.true_y)
 model_simple.predict(model_simple.X)
 model_simple.summarize()
 
-confidence_intervals = model_simple.get_confidence_intervals()
-print(confidence_intervals)
+hypothesis_tests = model_simple.perform_hypothesis_testing()
+print(hypothesis_tests)
