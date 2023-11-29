@@ -16,13 +16,24 @@ data_simple = df
 target = df['price']
 
 # univariate case
-data_simple = df[['sqft_living', 'zipcode']]
-# data_simple = df['sqft_living']
+data_simple = df['sqft_living']
 X = data_simple.to_numpy()
-model_simple = LinearRegression(n=len(data_simple), p=2)
+model_simple = LinearRegression(n=len(data_simple))
 model_simple.X = X
 model_simple.true_y = target
 model_simple.fit(model_simple.X, model_simple.true_y)
 model_simple.predict(model_simple.X)
 model_simple.summarize()
-model_simple.perform_hypothesis_testing()
+# model_simple.perform_hypothesis_testing()
+
+# univariate case
+# data_simple = df['sqft_living']
+# X = data_simple.to_numpy()
+# model_simple = LinearRegression(n=len(data_simple))
+# model_simple.X = X
+# model_simple.true_y = target
+# model_simple.fit(model_simple.X, target)
+# model_simple.predict(model_simple.X)
+# # model_simple.plot_simple_regression_line()
+# model_simple.summarize()
+# model_simple.perform_hypothesis_testing()

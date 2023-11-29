@@ -30,25 +30,7 @@ class LinearRegression():
         self.intercept = 0
 
     def fit(self, X, y):
-        # if self.p == 1:  # univariate
-        #     xmean = np.mean(X)
-        #     ymean = np.mean(y)
 
-        #     # slope
-        #     bhat1 = np.sum((X - xmean)*(y - ymean)) / \
-        #         np.sum(np.square(X - xmean))
-        #     self.weights = bhat1
-
-        #     # intercept
-        #     self.intercept = ymean - xmean * self.weights
-        # else:  # multi variate case
-            
-        #     # add column of ones to x to include intercept
-        #     X = np.hstack((np.ones((X.shape[0], 1)), X))
-            
-        #     self.weights = np.linalg.inv(
-        #         X.T @ X) @ X.T @ y
-        
         # if X is a 1d array, reshape to column
         if len(X.shape) == 1:
             X = X.reshape(-1, 1)
@@ -105,8 +87,8 @@ class LinearRegression():
                     label=f"Data Points", c='b', s=1)
 
         # get model weights and bais
-        self.fit(self.X, self.true_y)
-        self.predict(self.X)
+        # self.fit(self.X, self.true_y)
+        # self.predict(self.X)
 
         # if want to show CI, default to 95
         if ci:
@@ -141,8 +123,8 @@ class LinearRegression():
             ax.scatter(self.X['sqft_living'], self.X['yr_built'],
                        self.true_y, c='b', marker='o', s=1)
 
-        self.fit(self.X, self.true_y)
-        self.predict(self.X)
+        #self.fit(self.X, self.true_y)
+        #self.predict(self.X)
 
         if generated_data:
             x_plane = np.linspace(
@@ -230,11 +212,17 @@ class LinearRegression():
         # update residuals
         self.sample_residuals()
         
+        # if univariate (X is a vector), reshape to 2d array
+        X_numpy = self.X.to_numpy()
+        
+        if len(X_numpy.shape) == 1:
+            X_numpy = X_numpy.reshape(-1, 1)
+        
         # get mean squared error
         MSE = np.sum(np.square(self.residuals)) / (self.n - len(self.weights))
         
         # add intercept term to x
-        X_with_intercept = np.hstack((np.ones((self.X.shape[0], 1)), self.X))
+        X_with_intercept = np.hstack((np.ones((X_numpy.shape[0], 1)), X_numpy))
         
         # get variance-covariance matrix
         var_cov_matrix = MSE * np.linalg.inv(X_with_intercept.T @ X_with_intercept)
@@ -425,5 +413,11 @@ class LinearRegression():
         for test in hypothesis_test_results:
             hypothesis_test_table.add_row(test)
         
+        print('Hypothesis tests:')
         print(hypothesis_test_table)
+        
+        # send table to file
+        table = hypothesis_test_table.get_csv_string()
+        with open(f'figure/hypothesis_tests.csv', 'w') as file:
+            file.write(table)
         
