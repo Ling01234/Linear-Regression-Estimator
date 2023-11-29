@@ -5,9 +5,8 @@
 1. Least squares estimations: $\hat{\beta}$ for intercepts and slopes
 2. Hypothesis testing
 3. Confidence intervals
-4. R squared values, to determine the quality of the estimator
 5. Residual analysis: plotting residuals, detecting potential outliers, etc.
-6. Model summary: create a summary function that gives an overview of the regression result, like in R
+6. Model summary: create a summary function that gives an overview of the regression result, like in R. R squared values, to determine the quality of the estimator
 7. Visualization functions for regression line, predicted values, data points, etc.
 8. Make sure to document the code
 
