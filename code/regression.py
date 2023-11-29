@@ -402,7 +402,7 @@ class LinearRegression():
         df = self.n - len(self.weights)
         
         # get hypothesis test results for each coefficient
-        hypothesis_test_results = {}
+        hypothesis_test_results = []
         coef_names = ['Intercept'] + [f'x{i}' for i in range(1, self.p + 1)]
         for idx, (coef, std_error) in enumerate(zip(self.weights, self.standard_errors)):
             
@@ -413,11 +413,17 @@ class LinearRegression():
             p_value = 2 * (1 - t.cdf(abs(t_value), df))
             
             # add to dict
-            hypothesis_test_results[coef_names[idx]] = {
-                't_value': t_value,
-                'p_value': p_value,
-                'reject_null_hypothesis?': p_value < significance_level
-            }
+            hypothesis_test_results.append([
+                coef_names[idx],
+                t_value,
+                p_value,
+                p_value < significance_level
+            ]
+            )
             
-        return hypothesis_test_results
+        hypothesis_test_table = PrettyTable(['coefficient', 't_value', 'p_value', 'reject null hypothesis?'])
+        for test in hypothesis_test_results:
+            hypothesis_test_table.add_row(test)
+        
+        print(hypothesis_test_table)
         
