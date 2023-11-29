@@ -25,6 +25,4 @@ model_simple.true_y = target
 model_simple.fit(model_simple.X, model_simple.true_y)
 model_simple.predict(model_simple.X)
 model_simple.summarize()
-
-hypothesis_tests = model_simple.perform_hypothesis_testing()
-print(hypothesis_tests)
+model_simple.perform_hypothesis_testing()
