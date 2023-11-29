@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.12.22)  24 NOV 2023 22:26
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.12.22)  29 NOV 2023 12:47
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1010,7 +1010,7 @@ Package: lscape 2020/05/28 v3.02 Landscape Pages (DPC)
 )
 Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
 )) (./titlepage.tex
-<McGill_University_CoA.svg.png, id=11, 1204.5pt x 1525.7pt>
+<McGill_University_CoA.svg.png, id=15, 1204.5pt x 1525.7pt>
 File: McGill_University_CoA.svg.png Graphic file (type png)
 <use McGill_University_CoA.svg.png>
 Package pdftex.def Info: McGill_University_CoA.svg.png  used on input line 7.
@@ -1021,7 +1021,7 @@ Package pdftex.def Info: McGill_University_CoA.svg.png  used on input line 7.
 \tf@toc=\write7
 \openout7 = `report.toc'.
 
-<mcgill.jpeg, id=23, 152.41943pt x 41.15375pt>
+<mcgill.jpeg, id=28, 152.41943pt x 41.15375pt>
 File: mcgill.jpeg Graphic file (type jpg)
 <use mcgill.jpeg>
 Package pdftex.def Info: mcgill.jpeg  used on input line 56.
@@ -1040,12 +1040,12 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has b
                    \relax 
 l.56 \newpage
               [1 <./mcgill.jpeg>]
-Overfull \hbox (15.74475pt too wide) in paragraph at lines 72--73
+Overfull \hbox (15.74475pt too wide) in paragraph at lines 80--81
  [][] 
  []
 
 (../figure/p1_texts.tex)
-Overfull \hbox (57.06073pt too wide) in paragraph at lines 84--85
+Overfull \hbox (57.06073pt too wide) in paragraph at lines 92--93
  [][] 
  []
 
@@ -1053,7 +1053,7 @@ Overfull \hbox (57.06073pt too wide) in paragraph at lines 84--85
 AED: lastpage setting LastPage
 File: mcgill.jpeg Graphic file (type jpg)
 <use mcgill.jpeg>
-Package pdftex.def Info: mcgill.jpeg  used on input line 91.
+Package pdftex.def Info: mcgill.jpeg  used on input line 99.
 (pdftex.def)             Requested size: 71.13188pt x 19.206pt.
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
@@ -1064,21 +1064,21 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 
 [2] (./report.aux)
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: 9814C2D956916ADB9290ECA4E25C967A;103.
+(rerunfilecheck)             Checksum: 9BE9BB35596E674B8E5D66FCE748C154;277.
  ) 
 Here is how much of TeX's memory you used:
- 33729 strings out of 476093
- 674647 string characters out of 5795582
+ 33731 strings out of 476093
+ 674667 string characters out of 5795582
  1858787 words of memory out of 5000000
- 53542 multiletter control sequences out of 15000+600000
+ 53543 multiletter control sequences out of 15000+600000
  536358 words of font info for 74 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  84i,15n,80p,1292b,672s stack positions out of 10000i,1000n,20000p,200000b,200000s
 {c:/texlive/2022/texmf-dist/fonts/enc/dvips/base/8r.enc}<c:/texlive/2022/texmf-dist/fonts/type1/urw/times/utmb8a.pfb><c:/texlive/2022/texmf-dist/fonts/type1/urw/times/utmr8a.pfb><c:/texlive/2022/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on report.pdf (3 pages, 383950 bytes).
+Output written on report.pdf (3 pages, 385226 bytes).
 PDF statistics:
- 50 PDF objects out of 1000 (max. 8388607)
- 35 compressed objects within 1 object stream
- 5 named destinations out of 1000 (max. 500000)
- 31 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 55 PDF objects out of 1000 (max. 8388607)
+ 40 compressed objects within 1 object stream
+ 6 named destinations out of 1000 (max. 500000)
+ 39 words of extra memory for PDF output out of 10000 (max. 10000000)
 
