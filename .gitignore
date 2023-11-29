@@ -7,3 +7,7 @@ code/__pycache__/
 *.out
 *.synctex.gz
 *.toc
+*.pyc
+report/report.pdf
+report/report.log
+*.gitignore
