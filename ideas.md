@@ -17,6 +17,5 @@
 3. Compare to Python's implementation (sklearn) the accuracy of our implementation
 
 # TODO:
-1. run models
-2. write report
+1. write report
 
