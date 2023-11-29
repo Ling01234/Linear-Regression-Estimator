@@ -27,7 +27,6 @@ model_simple.predict(model_simple.X.to_numpy())
 model_simple.summarize()
 model_simple.perform_hypothesis_testing()
 model_simple.plot_simple_regression_line()
-# ic(model_simple.weights)
 
 # bi variate case
 data_multi2 = df[['sqft_living', 'yr_built']]
@@ -39,6 +38,16 @@ model_multi2.predict(model_multi2.X.to_numpy())
 model_multi2.summarize()
 model_multi2.perform_hypothesis_testing()
 model_multi2.plot_multi_data()
+
+# multi variate case
+# remove unnecessary columns
+to_remove = ['id', 'date', 'waterfront', 'view',
+             'condition', 'zipcode', 'lat', 'long']
+data_multi = df.drop(columns=to_remove)
+model_multi = LinearRegression(n=len(data_multi), p=len(data_multi.columns))
+model_multi.X = data_multi
+model_multi.true_y = target
+model_multi.fit(data_multi, target)
 
 # multi varaite case
 # remove unnecessary columns
