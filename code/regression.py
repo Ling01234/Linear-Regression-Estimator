@@ -413,7 +413,7 @@ class LinearRegression():
             )
 
         hypothesis_test_table = PrettyTable(
-            ['coefficient', 't_value', 'p_value', 'reject null hypothesis?'])
+            ['Coefficient', 't-value', 'p-value', 'Reject Null Hypothesis?'])
         for test in hypothesis_test_results:
             hypothesis_test_table.add_row(test)
 

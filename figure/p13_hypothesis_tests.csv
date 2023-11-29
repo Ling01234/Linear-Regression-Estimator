@@ -1,4 +1,4 @@
-coefficient,t_value,p_value,reject null hypothesis?
+Coefficient,t-value,p-value,Reject Null Hypothesis?
 Intercept,-0.74,0.46,False
 x1,60.98,0.0,True
 x2,89.01,0.0,True

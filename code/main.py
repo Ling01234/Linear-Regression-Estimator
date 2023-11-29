@@ -37,7 +37,7 @@ model_multi2.fit(model_multi2.X.to_numpy(), target)
 model_multi2.predict(model_multi2.X.to_numpy())
 model_multi2.summarize()
 model_multi2.perform_hypothesis_testing()
-model_multi2.plot_multi_data(show=True)
+model_multi2.plot_multi_data()
 
 # multi varaite case
 # remove unnecessary columns
