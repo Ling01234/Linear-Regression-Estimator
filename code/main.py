@@ -39,16 +39,6 @@ model_multi2.summarize()
 model_multi2.perform_hypothesis_testing()
 model_multi2.plot_multi_data()
 
-# multi variate case
-# remove unnecessary columns
-to_remove = ['id', 'date', 'waterfront', 'view',
-             'condition', 'zipcode', 'lat', 'long']
-data_multi = df.drop(columns=to_remove)
-model_multi = LinearRegression(n=len(data_multi), p=len(data_multi.columns))
-model_multi.X = data_multi
-model_multi.true_y = target
-model_multi.fit(data_multi, target)
-
 # multi varaite case
 # remove unnecessary columns
 to_remove = ['id', 'date', 'waterfront', 'view',

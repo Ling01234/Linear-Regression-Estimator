@@ -34,25 +34,25 @@ class LinearRegression():
         # if X is a 1d array, reshape to column
         if len(X.shape) == 1:
             X = X.reshape(-1, 1)
-            
+
         # add column of ones to X for intercept
         X = np.hstack((np.ones((X.shape[0], 1)), X))
-         
+
         # compute weights
         self.weights = np.linalg.inv(X.T @ X) @ X.T @ y
 
     def predict(self, X):
-        
+
         # if X is a 1d array, reshape to column
         if len(X.shape) == 1:
             X = X.reshape(-1, 1)
-        
+
         # add column on ones to x to include intercept
         X = np.hstack((np.ones((X.shape[0], 1)), X))
 
         # get predictions (includes intercept)
         self.pred = np.dot(X, self.weights)
-        
+
         # update sample residuals
         self.sample_residuals()
 
@@ -123,8 +123,8 @@ class LinearRegression():
             ax.scatter(self.X['sqft_living'], self.X['yr_built'],
                        self.true_y, c='b', marker='o', s=1)
 
-        #self.fit(self.X, self.true_y)
-        #self.predict(self.X)
+        # self.fit(self.X, self.true_y)
+        # self.predict(self.X)
 
         if generated_data:
             x_plane = np.linspace(
@@ -208,28 +208,29 @@ class LinearRegression():
         self.p_value = 1 - f.cdf(self.F_stat, self.p, self.n - self.p - 1)
 
     def get_standard_errors(self):
-        
+
         # update residuals
         self.sample_residuals()
-        
+
         # if univariate (X is a vector), reshape to 2d array
         X_numpy = self.X.to_numpy()
-        
+
         if len(X_numpy.shape) == 1:
             X_numpy = X_numpy.reshape(-1, 1)
-        
+
         # get mean squared error
         MSE = np.sum(np.square(self.residuals)) / (self.n - len(self.weights))
-        
+
         # add intercept term to x
         X_with_intercept = np.hstack((np.ones((X_numpy.shape[0], 1)), X_numpy))
-        
+
         # get variance-covariance matrix
-        var_cov_matrix = MSE * np.linalg.inv(X_with_intercept.T @ X_with_intercept)
-        
+        var_cov_matrix = MSE * \
+            np.linalg.inv(X_with_intercept.T @ X_with_intercept)
+
         # get standard errors (sqrt of diagonal terms)
         self.standard_errors = np.sqrt(np.diag(var_cov_matrix))
-        
+
         # RSS = np.sum(np.square(self.residuals))
         # MSE = RSS / (self.n - self.p - 1)
         # # XtX_inverse = np.linalg.inv(self.X.T.dot(self.X))
@@ -277,26 +278,28 @@ class LinearRegression():
             file.write(table)
 
         # get estimates, std error, t value, Pr(>|t|) for coefficients
-        coef_stats_table = PrettyTable(['Coef', 'Estimate', 'Std. error', 't value', 'p value'])
+        coef_stats_table = PrettyTable(
+            ['Coef', 'Estimate', 'Std. error', 't value', 'p value'])
         coef_stats = []
         coef_names = ['Intercept'] + [f'x{i}' for i in range(1, self.p + 1)]
         print('Coefficients:')
         for idx, weight in enumerate(self.weights):
             # compute p value for weight
-            p_value = 2 * (1 - stats.t.cdf(abs(self.t_values[idx]), df=self.n-self.p-1))
+            p_value = 2 * \
+                (1 - stats.t.cdf(abs(self.t_values[idx]), df=self.n-self.p-1))
             # format p value to not display small values as 0
             formatted_p_value = "{:.4e}".format(p_value)
             coef_stats.append([
                 coef_names[idx],
-                weight,
-                self.standard_errors[idx],
-                self.t_values[idx],  
+                round(weight, 2),
+                round(self.standard_errors[idx], 2),
+                round(self.t_values[idx], 2),
                 formatted_p_value
             ])
-        
+
         for stat in coef_stats:
             coef_stats_table.add_row(stat)
-            
+
         print(coef_stats_table)
         table = coef_stats_table.get_csv_string()
         with open(f'figure/p{self.p}_coef_stats_table.csv', 'w') as file:
@@ -363,13 +366,13 @@ class LinearRegression():
     # function to get confidence intervals for each weight given a confidence level
     # returns a dict mapping from each coefficient to a (lower bound, upper bound) tuple
     def get_confidence_intervals(self, confidence_level=0.95):
-        
+
         # get degrees of freedom
         df = self.n - len(self.weights)
-        
+
         # get critical value from t dist
         critical_value = t.ppf(1 - (1 - confidence_level)/2, df)
-        
+
         # get confidence intervals
         confidence_intervals = {}
         coef_names = ['Intercept'] + [f'x{i}' for i in range(1, self.p + 1)]
@@ -379,45 +382,45 @@ class LinearRegression():
             lower_bound = coef - error_margin
             upper_bound = coef + error_margin
             confidence_intervals[coef_names[idx]] = (lower_bound, upper_bound)
-            
+
         return confidence_intervals
-    
+
     # function to perform hypothesis testing
     # tests null hypothesis, where H0: coefficient = 0, for each coefficient in the model
     def perform_hypothesis_testing(self, significance_level=0.05):
-        
+
         # get degrees of freedom (n-p-1)
         df = self.n - len(self.weights)
-        
+
         # get hypothesis test results for each coefficient
         hypothesis_test_results = []
         coef_names = ['Intercept'] + [f'x{i}' for i in range(1, self.p + 1)]
         for idx, (coef, std_error) in enumerate(zip(self.weights, self.standard_errors)):
-            
+
             # get t value
             t_value = coef / std_error
-            
+
             # get p value
             p_value = 2 * (1 - t.cdf(abs(t_value), df))
-            
+
             # add to dict
             hypothesis_test_results.append([
                 coef_names[idx],
-                t_value,
-                p_value,
+                round(t_value, 2),
+                round(p_value, 2),
                 p_value < significance_level
             ]
             )
-            
-        hypothesis_test_table = PrettyTable(['coefficient', 't_value', 'p_value', 'reject null hypothesis?'])
+
+        hypothesis_test_table = PrettyTable(
+            ['coefficient', 't_value', 'p_value', 'reject null hypothesis?'])
         for test in hypothesis_test_results:
             hypothesis_test_table.add_row(test)
-        
+
         print('Hypothesis tests:')
         print(hypothesis_test_table)
-        
+
         # send table to file
         table = hypothesis_test_table.get_csv_string()
-        with open(f'figure/hypothesis_tests.csv', 'w') as file:
+        with open(f'figure/p{self.p}_hypothesis_tests.csv', 'w') as file:
             file.write(table)
-        
