@@ -18,6 +18,6 @@
 3. Compare to Python's implementation (sklearn) the accuracy of our implementation
 
 # TODO:
+1. run models
+2. write report
 
-1. write a function to present the summary table nicely in latex
-2. confidence interval for predictions (univariate case)
