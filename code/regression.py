@@ -3,13 +3,10 @@ from scipy import stats
 from scipy.stats import f
 from scipy.stats import t
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from icecream import ic
 from prettytable import PrettyTable, MSWORD_FRIENDLY
 import pandas as pd
 import seaborn as sns
 import pandas as pd
-
 
 class LinearRegression():
     def __init__(self, n=100, p=1, sigma=2) -> None:
@@ -56,15 +53,6 @@ class LinearRegression():
         # update sample residuals
         self.sample_residuals()
 
-    def generate_data(self):
-        if self.p == 1:
-            self.X = np.arange(self.n)
-            self.true_weights = np.random.uniform()
-        else:
-            self.X = np.random.rand(self.n, self.p) * 10
-            self.true_weights = np.random.uniform(0, 10, self.p)
-        self.true_bias = np.random.normal(0, np.sqrt(self.sigma), self.n)
-        self.true_y = np.dot(self.X, self.true_weights) + self.true_bias
 
     def plot_simple_data(self, show=False):
         plt.figure(figsize=(8, 6))
@@ -86,9 +74,6 @@ class LinearRegression():
         plt.scatter(self.X, self.true_y,
                     label=f"Data Points", c='b', s=1)
 
-        # get model weights and bais
-        # self.fit(self.X, self.true_y)
-        # self.predict(self.X)
 
         # if want to show CI, default to 95
         if ci:
@@ -123,8 +108,6 @@ class LinearRegression():
             ax.scatter(self.X['sqft_living'], self.X['yr_built'],
                        self.true_y, c='b', marker='o', s=1)
 
-        # self.fit(self.X, self.true_y)
-        # self.predict(self.X)
 
         if generated_data:
             x_plane = np.linspace(
@@ -230,16 +213,7 @@ class LinearRegression():
 
         # get standard errors (sqrt of diagonal terms)
         self.standard_errors = np.sqrt(np.diag(var_cov_matrix))
-
-        # RSS = np.sum(np.square(self.residuals))
-        # MSE = RSS / (self.n - self.p - 1)
-        # # XtX_inverse = np.linalg.inv(self.X.T.dot(self.X))
-        # if self.p != 1:
-        #     XtX_inverse = np.linalg.inv(np.dot(self.X.T, self.X))
-        #     self.standard_errors = np.sqrt(MSE * np.diag(XtX_inverse))
-        # else:
-        #     xmean = np.mean(self.X)
-        #     self.standard_errors = MSE / np.sum(np.square(self.X - xmean))
+        
 
     def get_t_values(self):
         if self.standard_errors is not None:
