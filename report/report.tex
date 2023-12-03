@@ -67,19 +67,28 @@
 % covariates influencing house prices. The dataset encompasses essential features
 % such as the number of bedrooms, bathrooms, square footage, floor count, and
 % location details, among others.
-Linear regression is a tool used in a wide array of statistical applications. In Python, there are many different packages providing implementations for the regression technique, and they may be overwhelming for some mathematicians coming from R into Python.
-In this project, we design a linear regression package bridging the gap between R and Python.
-Our package provides the basic functionalities of fitting a linear model and providing summaries in more or less the same way as done in R.
-In the following sections, you will learn how to use the package, including the different functionalities provided, as well as an example application on an existing dataset.
+Linear regression is a tool used in a wide array of statistical applications.
+In Python, there are many different packages providing implementations for the
+regression technique, and they may be overwhelming for some mathematicians
+coming from R into Python. In this project, we design a linear regression
+package bridging the gap between R and Python. Our package provides the basic
+functionalities of fitting a linear model and providing summaries in more or
+less the same way as done in R. In the following sections, you will learn how
+to use the package, including the different functionalities provided, as well
+as an example application on an existing dataset.
 
 \newpage
 \section{Functionality}
 The package offers the following primary functions:
 \begin{itemize}
-    \item fit(X: NumPy array, y: NumPy array): internally computes and stores the linear regression weights for a model fitted on X and y (including the intercept)
-    \item predict(X: NumPy array): internally stores the target predictions and residuals for the provided X data
-    \item plotting functions: different functions to plot the regression lines and their confidence intervals
-    \item metrics functions: functions that internally store various metrics of the model (update\_metrics updates all of them automatically)
+    \item fit(X: NumPy array, y: NumPy array): internally computes and stores the linear
+          regression weights for a model fitted on X and y (including the intercept)
+    \item predict(X: NumPy array): internally stores the target predictions and residuals
+          for the provided X data
+    \item plotting functions: different functions to plot the regression lines and their
+          confidence intervals
+    \item metrics functions: functions that internally store various metrics of the model
+          (update\_metrics updates all of them automatically)
     \item summarize(): generates a summary of the model, much like in R
 \end{itemize}
 By default, the plots and metrics that are computed by the model are stored in the figure folder. Internally, the package uses NumPy matrix functions to compute the weights.
@@ -87,9 +96,12 @@ The package assumes the intercept is not included in the covariates ands tempora
 
 \newpage
 \section{Usage}
-In order to use the model, the covariate matrix and the target vector must be converted to NumPy arrays.
-If .csv files are being used for the datasets, it is recommended to first import the data into a Pandas dataframe using the read\_csv function.
-Afterwards, the covariates and targets may be extracted and converted to NumPy arrays using the to\_numpy function. The main.py file provides an example application of these steps.
+In order to use the model, the covariate matrix and the target vector must be
+converted to NumPy arrays. If .csv files are being used for the datasets, it is
+recommended to first import the data into a Pandas dataframe using the
+read\_csv function. Afterwards, the covariates and targets may be extracted and
+converted to NumPy arrays using the to\_numpy function. The main.py file
+provides an example application of these steps.
 
 \newpage
 \section{Toy Dataset Overview}
@@ -141,6 +153,8 @@ relationship of the covariates with the housing price via a 3D plot.
     \caption{Bivariate Linear Regression}
     \label{fig: bivariate}
 \end{figure}
+
+\newpage
 
 \section{Model Summaries}
 
@@ -275,10 +289,14 @@ tables below.
 
 \newpage
 \section{Conclusion}
-In conclusion, the project offers a basic implementation of linear regression similar to the way it is presented in R.
-An example application on the toy dataset showed how to use the package on a dataset from a .csv file, which is the kind of data one works with in a lot of cases.
-One of the challenges in the project was keeping everything in order and organized, since many of the functions are interdependent (one erroneous function would make everything erroneous).
-In the future, it would be worth exploring and implementing additional kinds of regression into the model, and incorporating finer machine learning techniques.
-
+In conclusion, the project offers a basic implementation of linear regression
+similar to the way it is presented in R. An example application on the toy
+dataset shows how to use the package on a dataset from a .csv file, which is
+the kind of data one works with in a lot of cases. One of the challenges in the
+project was keeping everything in order and organized, since many of the
+functions are interdependent (one erroneous function would make everything
+erroneous). In the future, it would be worth exploring and implementing
+additional kinds of regression into the model, and incorporating finer machine
+learning techniques.
 
 \end{document}
