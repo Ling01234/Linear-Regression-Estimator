@@ -8,6 +8,7 @@ import pandas as pd
 import seaborn as sns
 import pandas as pd
 
+
 class LinearRegression():
     def __init__(self, n=100, p=1, sigma=2) -> None:
         self.n = n
@@ -53,7 +54,6 @@ class LinearRegression():
         # update sample residuals
         self.sample_residuals()
 
-
     def plot_simple_data(self, show=False):
         plt.figure(figsize=(8, 6))
         plt.scatter(self.X, self.true_y, label=f"Data Points", color='b')
@@ -73,7 +73,6 @@ class LinearRegression():
         plt.figure(figsize=(8, 6))
         plt.scatter(self.X, self.true_y,
                     label=f"Data Points", c='b', s=1)
-
 
         # if want to show CI, default to 95
         if ci:
@@ -107,7 +106,6 @@ class LinearRegression():
         else:
             ax.scatter(self.X['sqft_living'], self.X['yr_built'],
                        self.true_y, c='b', marker='o', s=1)
-
 
         if generated_data:
             x_plane = np.linspace(
@@ -213,7 +211,6 @@ class LinearRegression():
 
         # get standard errors (sqrt of diagonal terms)
         self.standard_errors = np.sqrt(np.diag(var_cov_matrix))
-        
 
     def get_t_values(self):
         if self.standard_errors is not None:
@@ -258,18 +255,34 @@ class LinearRegression():
         coef_names = ['Intercept'] + [f'x{i}' for i in range(1, self.p + 1)]
         print('Coefficients:')
         for idx, weight in enumerate(self.weights):
-            # compute p value for weight
-            p_value = 2 * \
-                (1 - stats.t.cdf(abs(self.t_values[idx]), df=self.n-self.p-1))
-            # format p value to not display small values as 0
-            formatted_p_value = "{:.4e}".format(p_value)
-            coef_stats.append([
-                coef_names[idx],
-                round(weight, 2),
-                round(self.standard_errors[idx], 2),
-                round(self.t_values[idx], 2),
-                formatted_p_value
-            ])
+            if self.p <= 2:
+                # compute p value for weight
+                p_value = 2 * \
+                    (1 -
+                     stats.t.cdf(abs(self.t_values[idx]), df=self.n-self.p-1))
+                # format p value to not display small values as 0
+                formatted_p_value = "{:.4e}".format(p_value)
+                coef_stats.append([
+                    coef_names[idx],
+                    round(weight, 2),
+                    round(self.standard_errors[idx], 2),
+                    round(self.t_values[idx], 2),
+                    formatted_p_value
+                ])
+            else:
+                # compute p value for weight
+                p_value = 2 * \
+                    (1 -
+                     stats.t.cdf(abs(self.t_values[idx]), df=self.n-self.p-1))
+                # format p value to not display small values as 0
+                formatted_p_value = "{:.4e}".format(p_value)
+                coef_stats.append([
+                    coef_names[idx],
+                    f'{weight:.4e}',
+                    f'{self.standard_errors[idx]:.4e}',
+                    f'{self.t_values[idx]:.4e}',
+                    formatted_p_value
+                ])
 
         for stat in coef_stats:
             coef_stats_table.add_row(stat)
