@@ -1,3 +1,12 @@
+"""
+AUTHORS:
+Ling Fei Zhang, 260985358
+Sevag Baghdassarian, 260980928
+
+PROJECT:
+Math 533 Final Project
+"""
+
 import numpy as np
 from scipy import stats
 from scipy.stats import f
